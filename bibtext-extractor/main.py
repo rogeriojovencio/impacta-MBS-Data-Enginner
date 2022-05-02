@@ -14,7 +14,8 @@ def read_yaml(name):
 
 #Read a bibtext file and convert to dataframe.
 def read_bibtext(name):
-    with open('file/'+name+'.bib') as bibtex_file:
+    print('Loading file/'+name+'.bib file')
+    with open('file/'+name+'.bib', encoding='utf-8') as bibtex_file:
         bib_database = bibtexparser.load(bibtex_file)
     return pd.DataFrame.from_records(bib_database.entries)
 
@@ -47,12 +48,3 @@ elif (configuration['type'] == 'yaml'):
 
 else:
     print('Option is not available')
-
-
-
-
-
-
-
-
-
