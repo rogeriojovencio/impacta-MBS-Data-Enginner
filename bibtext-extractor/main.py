@@ -43,20 +43,24 @@ df=pd.concat([iee,sciencedirect,dlacm], ignore_index=True)
 configuration = read_yaml('config')
 if (configuration['type'] == 'json'):
     df.to_json(configuration['file_name'] + '.json', orient='records')
+    print('articles.json records successfully')
 
 elif (configuration['type'] == 'csv'):
     df.to_csv(configuration['file_name'] +".csv")
+    print('articles.csv records successfully')
 
 elif (configuration['type'] == 'yaml'):
     # Convert dataframe into json object (easier to convert to yaml)
     data=json.loads(df.to_json(orient='records'))
     with open(configuration['file_name'] +'.yaml', 'w') as yml:
         yaml.dump(data, yml, allow_unicode=False)
+    print('articles.yaml records successfully')    
 
 elif (configuration['type'] == 'xml'):
     file = open(configuration['file_name'] +".xml", "w", encoding='UTF-8') 
     file.write('\n'.join(df.apply(to_xml, axis=1)),) 
     file.close()
+    print('articles.xml records successfully')
 
 else:
     print('Option is not available')
