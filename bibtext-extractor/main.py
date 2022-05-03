@@ -14,9 +14,17 @@ def read_yaml(name):
 
 #Read a bibtext file and convert to dataframe.
 def read_bibtext(name):
-    with open('file/'+name+'.bib') as bibtex_file:
+    print('Loading file/'+name+'.bib file')
+    with open('file/'+name+'.bib', encoding='utf-8') as bibtex_file:
         bib_database = bibtexparser.load(bibtex_file)
     return pd.DataFrame.from_records(bib_database.entries)
+
+def to_xml(row):
+    xml = ['<item>']
+    for field in row.index:
+        xml.append('  <field name="{0}">{1}</field>'.format(field, row[field]))
+    xml.append('</item>')
+    return '\n'.join(xml)
 
 iee = read_bibtext('iee')
 sciencedirect = read_bibtext('sciencedirect')
@@ -43,16 +51,12 @@ elif (configuration['type'] == 'yaml'):
     # Convert dataframe into json object (easier to convert to yaml)
     data=json.loads(df.to_json(orient='records'))
     with open(configuration['file_name'] +'.yaml', 'w') as yml:
-        yaml.dump(data, yml, allow_unicode=True)
+        yaml.dump(data, yml, allow_unicode=False)
+
+elif (configuration['type'] == 'xml'):
+    file = open(configuration['file_name'] +".xml", "w", encoding='UTF-8') 
+    file.write('\n'.join(df.apply(to_xml, axis=1)),) 
+    file.close()
 
 else:
     print('Option is not available')
-
-
-
-
-
-
-
-
-

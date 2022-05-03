@@ -1,7 +1,7 @@
 # Bibtext Extractor
 
 ## How it works
-This tool extracts a bibfile from iee, sciencedirect and dlacm and convert it to Json, CSV or Yaml based on config.yaml file.
+This tool extracts a bibfile from iee, sciencedirect and dlacm and convert it to Json, CSV, Yaml or XML based on config.yaml file.
 
 #### Requirements
 - Python 3+
@@ -20,7 +20,7 @@ Contains the main code with flow:
   * 2 - Arrange columns 
   * 3 - Concat dataframe of Ieee, ScientDirect and Dl ACM
   * 4 - Read config.yaml file
-  * 5 - Write json, csv or yaml output file.
+  * 5 - Write json, csv, yaml or XML output file.
 
 #### file folder
 Contains bibtex files from ieee, scientdirect and dl acm.
