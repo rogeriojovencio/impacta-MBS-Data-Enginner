@@ -13,7 +13,7 @@ def read_yaml(name):
             print(exc)
 
 #Read a bibtext file and convert to dataframe.
-def read_bibtext(name):
+def read_bib(name):
     print('Loading file/'+name+'.bib file')
     with open('file/'+name+'.bib', encoding='utf-8') as bibtex_file:
         bib_database = bibtexparser.load(bibtex_file)
@@ -27,65 +27,43 @@ def to_xml(row):
     xml.append('</item>')
     return '\n'.join(xml)
 
-iee = read_bibtext('iee')
-sciencedirect = read_bibtext('sciencedirect')
-dlacm = read_bibtext('dlacm')
+# Load all bib files and return their concatenation.
+def load_bibs():
+    iee = read_bib('iee')
+    sciencedirect = read_bib('sciencedirect')
+    dlacm = read_bib('dlacm')
 
-#Correct columns position based on pattern.
-columns= ["author", "title", "keywords", "abstract", "year", "type_publication", "doi"]
-iee=iee.reindex(columns=columns)
-sciencedirect=sciencedirect.reindex(columns=columns)
-dlacm=dlacm.reindex(columns=columns)
+    #Correct columns position based on pattern.
+    columns= ["author", "title", "keywords", "abstract", "year", "type_publication", "doi"]
+    iee=iee.reindex(columns=columns)
+    sciencedirect=sciencedirect.reindex(columns=columns)
+    dlacm=dlacm.reindex(columns=columns)
 
-#Concat all dataframes.
-df=pd.concat([iee,sciencedirect,dlacm], ignore_index=True)
+    return pd.concat([iee,sciencedirect,dlacm], ignore_index=True)
 
-print('Loading csv files')
+# Load all csv files and return theis concatenation.
+def load_csvs():
+    jcs = pd.read_csv('file/jcs_2020.csv', delimiter=';')
+    scimago = pd.read_csv('file/scimagojr_2020.csv', delimiter=';', low_memory=False)
 
-df_jcs = pd.read_csv('file/jcs_2020.csv', delimiter=';')
-df_scimago = pd.read_csv('file/scimagojr_2020.csv', delimiter=';', low_memory=False)
+    jcs.rename(columns={'Rank':'rank','Total Cites':'total_cities','Full Journal Title':'title','Journal Impact Factor':'impact_factor'}, inplace=True)
+    scimago.rename(columns={'Rank':'rank','Title':'title','Total Cites (3years)':'total_cities','Type':'type_publication'}, inplace=True)
 
-df_jcs.rename(columns={'Rank':'rank','Total Cites':'total_cities','Full Journal Title':'title','Journal Impact Factor':'impact_factor'}, inplace=True)
-df_scimago.rename(columns={'Rank':'rank','Title':'title','Total Cites (3years)':'total_cities','Type':'type_publication'}, inplace=True)
+    columns= ["rank", "title", "total_cities", "impact_factor", "type_publication"]
+    jcs=jcs.reindex(columns=columns)
+    scimago=scimago.reindex(columns=columns)
 
-columns= ["rank", "title", "total_cities", "impact_factor", "type_publication"]
-df_jcs=df_jcs.reindex(columns=columns)
-df_scimago=df_scimago.reindex(columns=columns)
+    return pd.concat([jcs,scimago], ignore_index=True)
 
-df_jcs=df_jcs.drop_duplicates() 
-df_scimago=df_scimago.drop_duplicates() 
+df_bib=load_bibs()
+df_csv=load_csvs()
 
-print(df_jcs)
-print('outro\n\n')
-print(df_scimago)
-print('outro\n\n')
+df_bib['title'] = df_bib['title'].str.upper()
+df_csv['title'] = df_csv['title'].str.upper()
 
-print(df)
+df = pd.merge(df_bib, df_csv, on=['title'], how='outer')
 
-df_jcs['title'] = df_jcs['title'].str.upper()
-df_scimago['title'] = df_scimago['title'].str.upper()
-df['title'] = df['title'].str.upper()
-
-
-print(df_jcs)
-print('outro2\n\n')
-print(df_scimago)
-print('outro2\n\n')
-
-print(df)
-
-df_scimago.info()
-df.info()
-
-
-# Syntax of pandas.DataFrame.join() method
-df.join(df_jcs, on='title')
-
-
-print('novo_______________')
-print(df)
-
-'''
+df=df.drop_duplicates(subset='title', ignore_index=True)
 
 # Write output file with type set in config.yaml file.
 configuration = read_yaml('config')
@@ -108,5 +86,3 @@ elif (configuration['type'] == 'xml'):
 
 else:
     print('Option is not available')
-
-    '''
