@@ -58,6 +58,12 @@ def load_csvs():
 
     return pd.concat([jcr,scimago], ignore_index=True)
 
+configuration = read_yaml('config')
+
+if (configuration['type'] not in ['json','yaml','csv','xml']):
+    print('Invalid value')
+    exit()
+
 df_bib=load_bibs()
 df_csv=load_csvs()
 
@@ -71,9 +77,6 @@ df=df.drop_duplicates(subset='title', ignore_index=True)
 df['scimago_value']=pd.to_numeric(df['scimago_value'])
 df['jcr_value']=pd.to_numeric(df['jcr_value'])
 #print(df.dtypes)
-
-# Write output file with type set in config.yaml file.
-configuration = read_yaml('config')
 
 # Check if there is a filter
 key = 'filter'
