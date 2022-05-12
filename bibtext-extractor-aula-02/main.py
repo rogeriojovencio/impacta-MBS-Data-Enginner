@@ -42,8 +42,7 @@ def load_bibs():
     dlacm = read_bib('dlacm')
 
 # Correct columns position based on pattern.
-    columns = ["author", "title", "keywords",
-               "abstract", "year", "type_publication", "doi"]
+    columns = ["author", "title", "keywords", "abstract", "year", "type_publication", "doi"]
     iee = iee.reindex(columns=columns)
     sciencedirect = sciencedirect.reindex(columns=columns)
     dlacm = dlacm.reindex(columns=columns)
@@ -58,13 +57,10 @@ def load_csvs():
     scimago = pd.read_csv('file/scimagojr_2020.csv',
                           delimiter=';', low_memory=False)
 
-    jcr.rename(columns={'Rank': 'rank', 'Total Cites': 'total_cities',
-               'Full Journal Title': 'title', 'Journal Impact Factor': 'scimago_value'}, inplace=True)
-    scimago.rename(columns={'Rank': 'rank', 'Title': 'title', 'Total Cites (3years)': 'total_cities',
-                   'Type': 'type_publication', 'SJR': 'jcr_value'}, inplace=True)
+    jcr.rename(columns={'Rank': 'rank', 'Total Cites': 'total_cities', 'Full Journal Title': 'title', 'Journal Impact Factor': 'scimago_value'}, inplace=True)
+    scimago.rename(columns={'Rank': 'rank', 'Title': 'title', 'Total Cites (3years)': 'total_cities','Type': 'type_publication', 'SJR': 'jcr_value'}, inplace=True)
 
-    columns = ["rank", "jcr_value", "scimago_value",
-               "title", "total_cities", "type_publication"]
+    columns = ["rank", "jcr_value", "scimago_value", "title", "total_cities", "type_publication"]
     jcr = jcr.reindex(columns=columns)
     scimago = scimago.reindex(columns=columns)
 
