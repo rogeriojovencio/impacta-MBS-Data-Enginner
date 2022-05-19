@@ -1,0 +1,9 @@
+type: xml
+file_name: output
+filter: year == '2019'
+
+# Example of filter
+# title == 'CA-A CANCER JOURNAL FOR CLINICIANS'
+# title == 'MMWR RECOMMENDATIONS AND REPORTS'
+# year == '2017'
+# scimago_value > 1.0
