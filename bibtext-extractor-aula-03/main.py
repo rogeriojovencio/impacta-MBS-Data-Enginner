@@ -3,6 +3,10 @@ import pandas as pd
 import json
 import yaml
 import requests
+import pymysql
+import sqlalchemy
+from sqlalchemy import create_engine
+
 
 
 #Read a yaml file.
@@ -61,7 +65,8 @@ def load_csvs():
     return pd.concat([jcr,scimago], ignore_index=True)
 
 def ieee_api(query):
-    apikey = "swz7c76fvfhwvac69hmzukbx"
+    #apikey = "swz7c76fvfhwvac69hmzukbx"
+    apikey = "3fe5knc3hk4tbuwr2yrudu96"
     start_record=1
     max_records=50
     total_records=0
@@ -73,6 +78,8 @@ def ieee_api(query):
         
         # Make a request for a given paper
         resp = requests.get(url)
+
+        print(resp)
 
         if (resp.ok):
             result = resp.json()
@@ -111,7 +118,7 @@ except Exception:
     
 df_csv=load_csvs()
 
-df_bib['title'] = df_bib['title'].str.upper()
+#df_bib['title'] = df_bib['title'].str.upper()
 df_csv['title'] = df_csv['title'].str.upper()
 df = pd.merge(df_csv, df_bib, on=['title'], how='outer')
 
@@ -145,7 +152,11 @@ elif (configuration['type'] == 'xml'):
     file.close()
 
 elif (configuration['type'] == 'mysql'):
-    #### GRAVAR PARA O BANCO AQUI
+    print(df)
+    print('mysql insertion started.')
+    db_connection = 'mysql+pymysql://root:root@localhost:3306/impacta'
+    db_connection = create_engine(db_connection)
+    df.to_sql(con=db_connection, name='data2', if_exists='replace', index=False)
 
 else:
     print('Option is not available')
