@@ -97,7 +97,7 @@ def ieee_api(query):
         else:
             break
 
-    df.rename(columns={'authors.authors':'author','publication_year':'year'}, inplace=True)
+    df.rename(columns={'publication_year':'year'}, inplace=True)
     columns= ["author", "title", "keywords", "abstract", "year", "type_publication", "doi"]
     df=df.reindex(columns=columns)
     return df
@@ -152,11 +152,10 @@ elif (configuration['type'] == 'xml'):
     file.close()
 
 elif (configuration['type'] == 'mysql'):
-    print(df)
     print('mysql insertion started.')
     db_connection = 'mysql+pymysql://root:root@localhost:3306/impacta'
     db_connection = create_engine(db_connection)
-    df.to_sql(con=db_connection, name='data2', if_exists='replace', index=False)
+    df.to_sql(con=db_connection, name='data', if_exists='replace', index=False)
 
 else:
     print('Option is not available')
