@@ -1,8 +1,12 @@
 type: mysql
 file_name: output
-filter: title == 'CONIC OPTIMIZATION'
+filter: title == 'BIG DATA AND DATA QUALITY'
+query: sort_order=asc&sort_field=article_number&publication_title=python
 
-#filter: year == '2022'
+#filter: title == 'Hydrothermal scheduling'
+#filter: title == 'CZAS KULTURY'
+#filter: title == 'Advanced Applications'
+
 
 # Example of filter
 # title == 'CA-A CANCER JOURNAL FOR CLINICIANS'
@@ -13,6 +17,8 @@ filter: title == 'CONIC OPTIMIZATION'
 # scimago_value > 1.0
 # scimago_value > 20.0
 
-query: sort_order=asc&sort_field=article_number&publication_title=python
 
+#Mergulhar até o nome do autor
+#Mergulhar até o keywords
 
+#query: sort_order=asc&sort_field=article_number&article_title=bigdata

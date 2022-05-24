@@ -22,11 +22,10 @@ apikey = "167021d4c58c07eb6d56968b6d41797a"
 
 # Doc https://dev.elsevier.com/documentation/AbstractRetrievalAPI.wadl#d1e48
 # Não funciona
-#url = "https://api.elsevier.com/content/metadata/article?apiKey=167021d4c58c07eb6d56968b6d41797a"
+url = "https://api.elsevier.com/content/metadata/article?apiKey=167021d4c58c07eb6d56968b6d41797a"
 
 # Não funciona
-url = "https://api.elsevier.com/content/metadata/article"
-
+#url = "https://api.elsevier.com/content/metadata/article"
 
 # Make a request for a given paper
 resp = requests.get(url,

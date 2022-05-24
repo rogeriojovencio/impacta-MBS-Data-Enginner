@@ -3,7 +3,9 @@ import pandas as pd
 import json
 import yaml
 import requests
-
+import pymysql
+import sqlalchemy
+from sqlalchemy import create_engine
 
 #Read a yaml file.
 def read_yaml(name):
@@ -61,7 +63,8 @@ def load_csvs():
     return pd.concat([jcr,scimago], ignore_index=True)
 
 def ieee_api(query):
-    apikey = "swz7c76fvfhwvac69hmzukbx"
+    #apikey = "swz7c76fvfhwvac69hmzukbx"
+    apikey = "3fe5knc3hk4tbuwr2yrudu96"
     start_record=1
     max_records=50
     total_records=0
@@ -73,6 +76,8 @@ def ieee_api(query):
         
         # Make a request for a given paper
         resp = requests.get(url)
+
+        print(resp)
 
         if (resp.ok):
             result = resp.json()
@@ -90,7 +95,7 @@ def ieee_api(query):
         else:
             break
 
-    df.rename(columns={'authors.authors':'author','publication_year':'year'}, inplace=True)
+    df.rename(columns={'publication_year':'year'}, inplace=True)
     columns= ["author", "title", "keywords", "abstract", "year", "type_publication", "doi"]
     df=df.reindex(columns=columns)
     return df
@@ -111,7 +116,7 @@ except Exception:
     
 df_csv=load_csvs()
 
-df_bib['title'] = df_bib['title'].str.upper()
+#df_bib['title'] = df_bib['title'].str.upper()
 df_csv['title'] = df_csv['title'].str.upper()
 df = pd.merge(df_csv, df_bib, on=['title'], how='outer')
 
@@ -145,7 +150,10 @@ elif (configuration['type'] == 'xml'):
     file.close()
 
 elif (configuration['type'] == 'mysql'):
-    #### GRAVAR PARA O BANCO AQUI
+    print('mysql insertion started.')
+    db_connection = 'mysql+pymysql://root:root@localhost:3306/impacta'
+    db_connection = create_engine(db_connection)
+    df.to_sql(con=db_connection, name='data', if_exists='append', index=False)
 
 else:
     print('Option is not available')
