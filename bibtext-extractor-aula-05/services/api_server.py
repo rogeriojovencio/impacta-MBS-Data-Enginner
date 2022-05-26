@@ -5,6 +5,7 @@ from datetime import datetime
 from sqlalchemy import create_engine
 import socket
 import json
+import bibtexparser
 
 '''
 Exemplo de chamadas:
@@ -20,6 +21,27 @@ http://127.0.0.1:5000/search?code=e597af72-c8d5-4f42-a1b2-7eea95002a83&string={"
 Pode usar também dois valores no json
 
 http://127.0.0.1:5000/search?code=e597af72-c8d5-4f42-a1b2-7eea95002a83&string={"total_cities":" > 3500", "`rank`": "< 100"}
+
+POST: 
+http://127.0.0.1:5000/store
+
+code:
+0ba10cd3-e47c-401f-a154-8ebebc323834
+
+data:
+@INPROCEEDINGS{8332632,
+title={HELIO LEAL},
+abstract={bla bla bla bla},
+total_cities={10}
+}
+
+data2:
+@INPROCEEDINGS{8332632,
+title={TSS LEAL},
+abstract={bla bla bla bla},
+total_cities={10}
+}
+
 '''
 
 # inicializar o flask
@@ -55,7 +77,6 @@ def create():
 
     response = {'code': myUUID}
     return jsonify(response)
-
 
 @app.route('/search', methods=['GET'])
 def search():
@@ -99,6 +120,53 @@ def search():
     ret = frame_res.to_json(orient='records')
 
     return jsonify(ret)
+
+@app.route('/store', methods=['POST'])
+def store_bibtex():
+    code = request.form.get('code')
+
+    if not code:
+        return 'Please inform a code request like -> url:port/search?code=your code'
+
+    # Identify if customer generated a code.
+    sqlEngine       = create_engine('mysql+pymysql://root:root@localhost:3306/impacta')
+    dbConnection    = sqlEngine.connect()
+    frame           = pd.read_sql("select * from impacta.search_codes where code = '" + code + "'", dbConnection)
+
+    pd.set_option('display.expand_frame_repr', False)
+
+    if frame.empty:
+        return 'Your code is invalid, please set a valid code!'
+
+
+    data = request.form.get('data')
+    print(data)   
+
+    if not data:
+        return 'Data is empty'
+
+    bib_database = bibtexparser.loads(data)
+    
+    bib_df = pd.DataFrame.from_records(bib_database.entries)
+
+    #Correct columns position based on pattern.
+    columns= ["title","abstract","total_cities"]
+
+    bib_df=bib_df.reindex(columns=columns)
+
+    print('bib_df')
+    print(bib_df)
+
+    print('mysql insertion started.')
+    db_connection = 'mysql+pymysql://root:root@localhost:3306/impacta'
+    db_connection = create_engine(db_connection)
+    bib_df.to_sql(con=db_connection, name='data', if_exists='append', index=False)
+
+    return "sucess"
+
+
+
+
 
 # Rodar API
 app.run()
